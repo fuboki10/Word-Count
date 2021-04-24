@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 func check(err error) {
@@ -14,7 +15,9 @@ func check(err error) {
 	}
 }
 
-func countWords(words []string, m map[string]int) {
+func countWords(words []string, m map[string]int, wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	for _, word := range words {
 		m[word]++
 	}
@@ -39,17 +42,20 @@ func main() {
 	// convert to lower case
 	data := strings.ToLower(string(d))
 	// split string
-	words := strings.Split(data, " ")
+	words := strings.Fields(data)
 
 	n := len(words)
 
 	m := make(map[string]int)
 
-	countWords(words[0:(n/5)], m)
-	countWords(words[(n/5):2*(n/5)], m)
-	countWords(words[2*(n/5):3*(n/5)], m)
-	countWords(words[3*(n/5):4*(n/5)], m)
-	countWords(words[4*(n/5):], m)
+	var wg sync.WaitGroup
+
+	for i := 0; i < 5; i++ {
+		wg.Add(1)
+		countWords(words[(n*i)/5:((i+1)*n)/5], m, &wg)
+	}
+
+	wg.Wait()
 
 	f, err1 := os.Create("out.txt")
 
