@@ -63,7 +63,7 @@ func reducer(sharedMap *shared_map, ch [5]chan map[string]int) {
 	}
 	wg.Wait()
 
-	f, err := os.Create("out.txt")
+	f, err := os.Create("WordCountOutput.txt")
 
 	check(err)
 
@@ -83,7 +83,7 @@ func reducer(sharedMap *shared_map, ch [5]chan map[string]int) {
 }
 
 func main() {
-	f, err := os.Open("input.txt")
+	f, err := os.Open("test.txt")
 
 	check(err)
 
